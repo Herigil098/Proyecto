@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Gauss-Seidel</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Método de Gauss-Seidel</h1>
+
+    <form id="gaussForm">
+        <label for="matrixA">Matriz A (separada por comas y punto y coma):</label>
+        <input type="text" id="matrixA" placeholder="1,2,3;4,5,6;7,8,9" required>
+
+        <label for="vectorB">Vector B (separado por comas):</label>
+        <input type="text" id="vectorB" placeholder="1,2,3" required>
+
+        <label for="initialGuess">Aproximación inicial (separada por comas):</label>
+        <input type="text" id="initialGuess" placeholder="0,0,0" required>
+
+        <label for="maxIterations">Número máximo de iteraciones:</label>
+        <input type="number" id="maxIterations" placeholder="100" required>
+
+        <button type="button" onclick="solveGaussSeidel()">Resolver</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function solveGaussSeidel() {
+            // Obtener valores del formulario
+            var matrixA = parseMatrix(document.getElementById('matrixA').value);
+            var vectorB = parseVector(document.getElementById('vectorB').value);
+            var initialGuess = parseVector(document.getElementById('initialGuess').value);
+            var maxIterations = parseInt(document.getElementById('maxIterations').value);
+
+            // Validar las dimensiones de la matriz y el vector
+            if (matrixA.length !== vectorB.length || matrixA[0].length !== initialGuess.length) {
+                alert('Las dimensiones de la matriz y el vector no son compatibles.');
+                return;
+            }
+
+            // Lógica del método de Gauss-Seidel
+            var result = gaussSeidel(matrixA, vectorB, initialGuess, maxIterations);
+
+            // Mostrar el resultado
+            var resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Resultado del método de Gauss-Seidel:</p>';
+            resultDiv.innerHTML += '<p>' + result.join(', ') + '</p>';
+        }
+
+        // Funciones de ayuda para analizar la entrada del formulario
+        function parseMatrix(input) {
+            return input.split(';').map(row => row.split(',').map(Number));
+        }
+
+        function parseVector(input) {
+            return input.split(',').map(Number);
+        }
+
+        // Implementación del método de Gauss-Seidel
+        function gaussSeidel(matrixA, vectorB, initialGuess, maxIterations) {
+            var n = matrixA.length;
+            var x = initialGuess.slice(); // Copiar la aproximación inicial
+
+            for (var k = 0; k < maxIterations; k++) {
+                for (var i = 0; i < n; i++) {
+                    var sigma = 0;
+                    for (var j = 0; j < n; j++) {
+                        if (j !== i) {
+                            sigma += matrixA[i][j] * x[j];
+                        }
+                    }
+                    x[i] = (vectorB[i] - sigma) / matrixA[i][i];
+                }
+            }
+
+            return x;
+        }
+    </script>
+</body>
+</html>
